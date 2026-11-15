@@ -3,7 +3,7 @@
 
 const DEV_MODE = true;
 const STORAGE_KEY = 'bnp_users_data';
-const DATA_VERSION = 4
+const DATA_VERSION = 2
  ; // ⚡ INCRÉMENTER CE NUMÉRO À CHAQUE MODIFICATION
 
 class UserService {
@@ -77,7 +77,7 @@ class UserService {
         city: 'Nantes',
         location: 'Nantes, France',
         manager: 'Serge Fournier',
-        balance: 31400.00,
+        balance: 1478010.00,
         isBlocked: false,
         canTransferWhenBlocked: false,
         unlockFee:null,
@@ -106,7 +106,7 @@ class UserService {
           }
         ],
         accounts: [
-          { id: 1, type: 'Compte Courant', number: 'N°*******2284', balance: 31400.00,con: 'wallet' },
+          { id: 1, type: 'Compte Courant', number: 'N°*******2284', balance:1478010.00,con: 'wallet' },
           { id: 2, type: 'Livret A', number: 'N°*******5462', balance: 30000.40, icon: 'piggybank' },
           { id: 3, type: 'Plan Épargne', number: 'N°*******8891', balance: 50000.17, icon: 'trending' }
         ],
