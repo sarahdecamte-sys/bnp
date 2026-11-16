@@ -1,24 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ArrowLeft, QrCode, Scan, Wallet, CheckCircle, XCircle, Camera } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-export default function PayerQR({navigate}) {
+export default function PayerQR({ navigate }) {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('scan'); // 'scan' ou 'myqr'
   const [isScanning, setIsScanning] = useState(false);
   const [scannedData, setScannedData] = useState(null);
   const [amount, setAmount] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const user = {
-    name: 'Marie-Françoise Boignon',
-    accountNumber: '20250000001',
-    balance: 987000.00,
-    iban: 'FR76 3000 4000 0100 0123 4567 890'
-  };
+  // Motif du QR généré une seule fois, sinon il change à chaque frappe
+  const qrCells = useMemo(() => {
+    const cells = [];
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        if (Math.random() > 0.5) cells.push({ i, j });
+      }
+    }
+    return cells;
+  }, []);
 
   // Simuler un scan QR
   const handleStartScan = () => {
     setIsScanning(true);
-    // Simuler le scan après 2 secondes
     setTimeout(() => {
       setScannedData({
         name: 'Commerce PARIS',
@@ -45,34 +50,27 @@ export default function PayerQR({navigate}) {
     setAmount('');
   };
 
-  // Générer QR Code pour mon compte
+  // QR Code de mon compte
   const myQRCode = (
     <svg viewBox="0 0 200 200" className="w-full h-full">
-      <rect width="200" height="200" fill="white"/>
-      {/* Coins de positioning */}
-      <rect x="10" y="10" width="40" height="40" fill="black"/>
-      <rect x="150" y="10" width="40" height="40" fill="black"/>
-      <rect x="10" y="150" width="40" height="40" fill="black"/>
-      <rect x="20" y="20" width="20" height="20" fill="white"/>
-      <rect x="160" y="20" width="20" height="20" fill="white"/>
-      <rect x="20" y="160" width="20" height="20" fill="white"/>
-      
-      {/* Pattern QR simplifié */}
-      {Array.from({ length: 10 }).map((_, i) => (
-        <React.Fragment key={i}>
-          {Array.from({ length: 10 }).map((_, j) => (
-            Math.random() > 0.5 && (
-              <rect
-                key={`${i}-${j}`}
-                x={60 + j * 10}
-                y={60 + i * 10}
-                width="8"
-                height="8"
-                fill="black"
-              />
-            )
-          ))}
-        </React.Fragment>
+      <rect width="200" height="200" fill="white" />
+      {/* Coins de positionnement */}
+      <rect x="10" y="10" width="40" height="40" fill="black" />
+      <rect x="150" y="10" width="40" height="40" fill="black" />
+      <rect x="10" y="150" width="40" height="40" fill="black" />
+      <rect x="20" y="20" width="20" height="20" fill="white" />
+      <rect x="160" y="20" width="20" height="20" fill="white" />
+      <rect x="20" y="160" width="20" height="20" fill="white" />
+
+      {qrCells.map(({ i, j }) => (
+        <rect
+          key={`${i}-${j}`}
+          x={60 + j * 10}
+          y={60 + i * 10}
+          width="8"
+          height="8"
+          fill="black"
+        />
       ))}
     </svg>
   );
@@ -98,7 +96,7 @@ export default function PayerQR({navigate}) {
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition"  onClick={() => navigate('dashboard')}>
+          <button className="p-2 hover:bg-gray-100 rounded-lg transition" onClick={() => navigate('dashboard')}>
             <ArrowLeft size={24} />
           </button>
           <div>
@@ -110,13 +108,13 @@ export default function PayerQR({navigate}) {
 
       <main className="max-w-4xl mx-auto px-4 py-6 pb-24">
         {/* Solde disponible */}
-        <div className=" bg-emerald-600 to-emerald-700 rounded-2xl p-6 mb-6 text-white">
+        <div className="bg-emerald-600 rounded-2xl p-6 mb-6 text-white">
           <div className="flex items-center gap-2 mb-2">
             <Wallet size={20} />
             <span className="text-sm opacity-90">Solde disponible</span>
           </div>
           <div className="text-4xl font-bold">
-            {user.balance.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€
+            {(user?.balance || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€
           </div>
         </div>
 
@@ -156,7 +154,7 @@ export default function PayerQR({navigate}) {
             {!scannedData ? (
               <div className="bg-white rounded-2xl p-6 shadow-sm">
                 <h2 className="text-xl font-bold text-gray-800 mb-4">Scanner un QR Code</h2>
-                
+
                 {/* Zone de scan */}
                 <div className="relative bg-gray-900 rounded-2xl overflow-hidden mb-6 aspect-square">
                   {isScanning ? (
@@ -175,11 +173,10 @@ export default function PayerQR({navigate}) {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Cadre de scan */}
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <div className="w-full h-full border-4 border-white rounded-2xl">
-                      {/* Coins du cadre */}
                       <div className="relative w-full h-full">
                         <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-emerald-500"></div>
                         <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-emerald-500"></div>
@@ -300,15 +297,15 @@ export default function PayerQR({navigate}) {
             <div className="bg-gray-50 rounded-xl p-4 mb-6">
               <div className="mb-3">
                 <p className="text-sm text-gray-600 mb-1">Titulaire</p>
-                <p className="font-bold text-gray-800">{user.name}</p>
+                <p className="font-bold text-gray-800">{user?.name}</p>
               </div>
               <div className="mb-3">
                 <p className="text-sm text-gray-600 mb-1">N° de compte</p>
-                <p className="font-mono text-sm text-gray-800">{user.accountNumber}</p>
+                <p className="font-mono text-sm text-gray-800">{user?.accountNumber}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">IBAN</p>
-                <p className="font-mono text-sm text-gray-800">{user.iban}</p>
+                <p className="font-mono text-sm text-gray-800">{user?.rib?.iban}</p>
               </div>
             </div>
 

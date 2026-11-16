@@ -3,7 +3,7 @@
 
 const DEV_MODE = true;
 const STORAGE_KEY = 'bnp_users_data';
-const DATA_VERSION = 2
+const DATA_VERSION = 23
  ; // ⚡ INCRÉMENTER CE NUMÉRO À CHAQUE MODIFICATION
 
 class UserService {
@@ -102,7 +102,7 @@ class UserService {
             weeklyPaymentLimit: 2000,
             internationalPaymentEnabled: true,
             issueDate: '12/2022',
-            cardHolder: 'Laeticia Guillon'
+            cardHolder: 'Normand Colombo'
           }
         ],
         accounts: [
